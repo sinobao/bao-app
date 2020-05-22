@@ -1,33 +1,31 @@
 import React from 'react';
+import { fetchBaiduHot } from './apiCore';
+import NewsCard from './newsCard';
+import Grid from '@material-ui/core/Grid';
 
 function App() {
-  const [data, setData] = React.useState(null);
-
-  const fetchingData = () => {
-    const axios = require('axios');
-    const url = 'http://tieba.baidu.com/hottopic/browse/topicList';
-
-    axios
-      .get(url, {
-        headers: {},
-      })
-      .then((response) => response.data.data.bang_topic.topic_list)
-      .then((topics) => setData(topics));
-  };
+  const [data, setData] = React.useState([]);
 
   React.useEffect(() => {
-    fetchingData();
+    fetchBaiduHot().then((baiduHot) =>
+      setData(baiduHot.data.bang_topic.topic_list)
+    );
   }, []);
 
   return (
     <div>
-      <h1>Hello world</h1>
-      {console.log(data)}
-      <ul>
+      <Grid container direction='row' justify='space-evenly'>
+        {/* <NewsCard /> */}
         {data === null
           ? ''
-          : data.map((i) => <li key={i.topic_id}>{i.topic_name}</li>)}
-      </ul>
+          : data.map((i) => (
+              <NewsCard
+                key={i.topic_id}
+                title={i.topic_name}
+                description={i.topic_desc}
+              />
+            ))}
+      </Grid>
     </div>
   );
 }
